@@ -1,0 +1,60 @@
+{
+  "name": "@telordev/simse",
+  "version": "1.0.0",
+  "description": "Official TypeScript SDK for the Simse public API (api.simse.dev) — Anthropic-Messages-compatible.",
+  "license": "MIT",
+  "author": "Telor <support@telor.dev>",
+  "homepage": "https://github.com/telordev/simse",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/telordev/simse.git",
+    "directory": "sdk/typescript"
+  },
+  "bugs": {
+    "url": "https://github.com/telordev/simse/issues"
+  },
+  "keywords": [
+    "simse",
+    "anthropic",
+    "llm",
+    "ai",
+    "messages",
+    "sdk",
+    "api"
+  ],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
