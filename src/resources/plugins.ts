@@ -70,4 +70,16 @@ export class Plugins {
     );
     return data;
   }
+
+  /** Enable or disable an installed plugin. */
+  async setEnabled(
+    pluginName: string,
+    enabled: boolean,
+  ): Promise<{ updated: boolean }> {
+    const { data } = await this.client.post<{ updated: boolean }>(
+      "/v1/plugins/enabled",
+      { plugin_name: pluginName, enabled },
+    );
+    return data;
+  }
 }

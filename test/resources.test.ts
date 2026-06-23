@@ -209,6 +209,14 @@ describe("plugins", () => {
     ).toBe(true);
     expect(requests[4]!.body).toMatchObject({ plugin_name: "p1" });
   });
+
+  it("setEnabled posts correct body", async () => {
+    const { fetch, requests } = mockFetch([{ json: { updated: true } }]);
+    const client = new Simse({ apiKey: "sk_x", fetch });
+    const result = await client.plugins.setEnabled("github", false);
+    expect(result.updated).toBe(true);
+    expect(requests[0]!.body).toMatchObject({ plugin_name: "github", enabled: false });
+  });
 });
 
 describe("flags", () => {
