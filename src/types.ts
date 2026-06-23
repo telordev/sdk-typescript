@@ -349,6 +349,21 @@ export interface Session {
   message_count?: number;
 }
 
+/**
+ * A connector attachment for a session create request (spec §1.4).
+ * References a registered connector and optionally overrides credentials for
+ * this session only.
+ */
+export interface SessionConnector {
+  /** The connector ID (from `POST /v1/connectors`). */
+  connector_id: string;
+  /** Per-session team bearer override. Replaces the connector's stored default
+   * bearer for this session when set. */
+  bearer?: string;
+  /** Per-session static header overrides (key → value). */
+  headers?: Record<string, string>;
+}
+
 export interface SessionCreateParams {
   model?: string;
   title?: string;
@@ -357,6 +372,10 @@ export interface SessionCreateParams {
   system?: string;
   /** Arbitrary key-value metadata attached to the session (e.g. team, role). */
   metadata?: Record<string, string>;
+  /** Connectors to attach to this session (spec §1.4). Each entry references a
+   * registered connector and may supply a per-session bearer override. Omitted
+   * from the wire body when not set. */
+  connectors?: SessionConnector[];
 }
 
 export interface SessionList {
@@ -428,6 +447,81 @@ export interface SessionResumeResult {
     status: string;
     created_at: string;
   }>;
+}
+
+// ─── Connectors ────────────────────────────────────────────────────────────────
+
+/**
+ * Authentication credentials for a connector. Only `"bearer"` kind is
+ * currently supported. The `value` field is **always redacted** (null) in
+ * API responses (spec §1.3).
+ */
+export interface ConnectorAuthParams {
+  kind: "bearer";
+  /** The bearer token value (write-only — redacted on read). */
+  value?: string;
+  /** When true, the per-session team bearer is used instead of the stored value. */
+  per_session?: boolean;
+}
+
+/** Params for `POST /v1/connectors`. */
+export interface ConnectorCreateParams {
+  name: string;
+  /** Always `"mcp"`. */
+  type: "mcp";
+  url: string;
+  auth: ConnectorAuthParams;
+  /** Static extra headers (values redacted on read). */
+  headers?: Record<string, string>;
+  /** Allowlist of tool names exposed to the model. */
+  tool_allowlist?: string[];
+  /** Denylist of tool names hidden from the model. */
+  tool_denylist?: string[];
+}
+
+/** Params for `PATCH /v1/connectors/{id}` (all fields optional). */
+export interface ConnectorUpdateParams {
+  name?: string;
+  url?: string;
+  auth?: ConnectorAuthParams;
+  headers?: Record<string, string>;
+  tool_allowlist?: string[];
+  tool_denylist?: string[];
+}
+
+/**
+ * A registered connector (remote-MCP server). Bearer tokens and static
+ * header values are **always redacted** in responses (spec §1.3).
+ */
+export interface Connector {
+  id: string;
+  user_id: string;
+  name: string;
+  type: string;
+  url: string;
+  /** Auth metadata (value omitted / null — redacted). */
+  auth?: { kind: string; per_session?: boolean } | null;
+  /** Header keys present (values redacted). */
+  headers?: Record<string, string> | null;
+  tool_allowlist?: string[] | null;
+  tool_denylist?: string[] | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/** `GET /v1/connectors` envelope. */
+export interface ConnectorList {
+  connectors: Connector[];
+}
+
+/** `POST /v1/connectors/{id}/test` response. */
+export interface ConnectorTestResult {
+  /** Whether `tools/list` succeeded. */
+  ok: boolean;
+  /** Number of tools returned (0 when ok is false). */
+  tool_count: number;
+  /** Error description when ok is false. */
+  error?: string;
 }
 
 // ─── Memories ──────────────────────────────────────────────────────────────────
