@@ -98,6 +98,50 @@ describe("sessions lifecycle", () => {
     expect(result.usage).toEqual({ input_tokens: 12, output_tokens: 8 });
   });
 
+  it("carries system and metadata when set", async () => {
+    const { fetch, requests } = mockFetch([
+      {
+        status: 200,
+        json: {
+          id: "sess_sys",
+          model: "zoysia",
+          status: "active",
+          created_at: "2026-06-23T00:00:00Z",
+        },
+      },
+    ]);
+    const client = new Simse({ apiKey: "sk_x", fetch });
+    const sess = await client.sessions.create({
+      system: "never move money without CFO approval",
+      metadata: { team: "eng", role: "runner" },
+    });
+    expect(requests[0]!.method).toBe("POST");
+    expect(requests[0]!.body).toMatchObject({
+      system: "never move money without CFO approval",
+      metadata: { team: "eng", role: "runner" },
+    });
+    expect(sess.id).toBe("sess_sys");
+  });
+
+  it("omits system and metadata from body when unset", async () => {
+    const { fetch, requests } = mockFetch([
+      {
+        status: 200,
+        json: {
+          id: "sess_bare",
+          model: null,
+          status: "active",
+          created_at: "2026-06-23T00:00:00Z",
+        },
+      },
+    ]);
+    const client = new Simse({ apiKey: "sk_x", fetch });
+    await client.sessions.create({ title: "bare" });
+    const body = requests[0]!.body as Record<string, unknown>;
+    expect(body).not.toHaveProperty("system");
+    expect(body).not.toHaveProperty("metadata");
+  });
+
   it("resume + abort", async () => {
     const { fetch, requests } = mockFetch([
       { json: { messages: [], tool_calls: [] } },

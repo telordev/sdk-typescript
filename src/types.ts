@@ -352,6 +352,11 @@ export interface Session {
 export interface SessionCreateParams {
   model?: string;
   title?: string;
+  /** Per-session system prompt (persona + guardrails). Injected on every
+   * prompt turn and resume (spec §2.2). */
+  system?: string;
+  /** Arbitrary key-value metadata attached to the session (e.g. team, role). */
+  metadata?: Record<string, string>;
 }
 
 export interface SessionList {
