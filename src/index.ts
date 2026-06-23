@@ -65,6 +65,7 @@ export { Memories } from "./resources/memories.js";
 export { Plugins } from "./resources/plugins.js";
 export { PM } from "./resources/pm.js";
 export { Flags } from "./resources/flags.js";
+export { Connectors } from "./resources/connectors.js";
 
 // All wire types.
 export type * from "./types.js";

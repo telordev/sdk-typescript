@@ -5,6 +5,7 @@ import {
   UsageResource,
 } from "./resources/account.js";
 import { Agents } from "./resources/agents.js";
+import { Connectors } from "./resources/connectors.js";
 import { Flags } from "./resources/flags.js";
 import { Memories } from "./resources/memories.js";
 import { Messages } from "./resources/messages.js";
@@ -45,6 +46,7 @@ export class Simse extends BaseClient {
   readonly plugins: Plugins;
   readonly pm: PM;
   readonly flags: Flags;
+  readonly connectors: Connectors;
 
   constructor(options: ClientOptions = {}) {
     super(options);
@@ -59,5 +61,6 @@ export class Simse extends BaseClient {
     this.plugins = new Plugins(this);
     this.pm = new PM(this);
     this.flags = new Flags(this);
+    this.connectors = new Connectors(this);
   }
 }
